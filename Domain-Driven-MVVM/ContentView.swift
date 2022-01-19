@@ -6,16 +6,38 @@
 //
 
 import SwiftUI
+import Combine
 
-struct ContentView: View {
-    var body: some View {
-        Text("Hello, world!")
-            .padding()
+public struct ContentView: View {
+    @ObservedObject var viewModel: ReceiptManagementViewModel = .init()
+    
+    public var body: some View {
+        NavigationView {
+            VStack {
+                List {
+                    ForEach(viewModel.receipts) { receipt in
+                        Text(receipt.name)
+                    }
+                }
+            }
+            .alert(
+                isPresented: $viewModel.isErrorPresented,
+                error: viewModel.error,
+                actions: {
+                    Button("OK") {
+                        viewModel.actions.send(.dismissErrorAlert)
+                    }
+                })
+            .onAppear() {
+                viewModel.actions.send(.fetchReceipts)
+            }
+            .navigationTitle(Text("My Receipts"))
+        }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+public struct ContentView_Preview: PreviewProvider {
+    public static var previews: some View {
+        ContentView(viewModel: .init(client: .mock, analyticsClient: .mock))
     }
 }

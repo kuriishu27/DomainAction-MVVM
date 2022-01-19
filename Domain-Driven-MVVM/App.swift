@@ -11,7 +11,7 @@ import SwiftUI
 struct Domain_Driven_MVVMApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(viewModel: .init(client: .mock, analyticsClient: .mock))
         }
     }
 }
